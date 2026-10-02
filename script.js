@@ -7,9 +7,7 @@ const forecastContainer = document.querySelector("[data-forecastContainer]");
 
 const API_KEY = "d1845658f92b31c64bd94f06f7188c9c";
 let currentUnit = "metric"; // default to Celsius
-
-// NEW: Global variable to store forecast data so we can switch tabs without re-fetching
-let globalForecastData = null; 
+let globalForecastData = null; // Store forecast data globally for tab switching
 
 // Initialize
 getFromSessionStorage();
@@ -19,6 +17,7 @@ setInterval(updateTime, 60000); // update time every minute
 function getFromSessionStorage() {
     const localCoordinates = sessionStorage.getItem("user-coordinates");
     if (!localCoordinates) {
+        // Default city
         fetchWeatherByCity("London"); 
     } else {
         const coordinates = JSON.parse(localCoordinates);
@@ -26,6 +25,7 @@ function getFromSessionStorage() {
     }
 }
 
+// Fetch Current Weather & Forecast by City
 async function fetchWeatherByCity(city) {
     showLoader();
     try {
@@ -35,10 +35,10 @@ async function fetchWeatherByCity(city) {
         if (!resWeather.ok) throw new Error("City not found");
         
         const weatherData = await resWeather.json();
-        globalForecastData = await resForecast.json(); // Save globally
+        globalForecastData = await resForecast.json(); 
         
         renderCurrentWeather(weatherData);
-        checkActiveTabAndRender(); // Decide which forecast to render
+        checkActiveTabAndRender(); 
         hideLoader();
     } catch (error) {
         hideLoader();
@@ -46,6 +46,7 @@ async function fetchWeatherByCity(city) {
     }
 }
 
+// Fetch Current Weather & Forecast by Coordinates (Geolocation)
 async function fetchWeatherByCoords(coords) {
     const { lat, lon } = coords;
     showLoader();
@@ -54,10 +55,10 @@ async function fetchWeatherByCoords(coords) {
         const resForecast = await fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=${currentUnit}`);
         
         const weatherData = await resWeather.json();
-        globalForecastData = await resForecast.json(); // Save globally
+        globalForecastData = await resForecast.json(); 
         
         renderCurrentWeather(weatherData);
-        checkActiveTabAndRender(); // Decide which forecast to render
+        checkActiveTabAndRender(); 
         hideLoader();
     } catch (error) {
         hideLoader();
@@ -85,35 +86,43 @@ function formatTime(timestamp) {
 }
 
 function renderCurrentWeather(data) {
+    // Left Sidebar Elements
     document.querySelector("[data-temp]").innerText = Math.round(data.main.temp);
     document.querySelector("[data-weatherIcon]").src = `https://openweathermap.org/img/wn/${data.weather[0].icon}@4x.png`;
     document.querySelector("[data-weatherDesc]").innerText = data.weather[0].description;
     document.querySelector("[data-cityName]").innerText = `${data.name}, ${data.sys.country}`;
     document.querySelector("[data-rainChance]").innerText = data.clouds.all;
+
+    // Highlights Elements
     document.querySelector("[data-feelsLike]").innerText = Math.round(data.main.feels_like);
     
+    // Wind
     let windSpeedVal = currentUnit === 'metric' ? Math.round(data.wind.speed * 3.6) : Math.round(data.wind.speed);
     document.querySelector("[data-windSpeed]").innerText = windSpeedVal;
     document.querySelector("[data-windDir]").innerText = getWindDirection(data.wind.deg);
 
+    // Sun
     document.querySelector("[data-sunrise]").innerText = formatTime(data.sys.sunrise);
     document.querySelector("[data-sunset]").innerText = formatTime(data.sys.sunset);
 
+    // Humidity
     const humidity = data.main.humidity;
     document.querySelector("[data-humidity]").innerText = humidity;
     document.querySelector("[data-humidityBar]").style.height = `${humidity}%`;
     document.querySelector("[data-humidityStatus]").innerText = humidity > 60 ? "High 💧" : humidity < 30 ? "Low 🌵" : "Normal 👍";
 
+    // Visibility
     const visKm = (data.visibility / 1000).toFixed(1);
     document.querySelector("[data-visibility]").innerText = visKm;
     document.querySelector("[data-visStatus]").innerText = visKm > 8 ? "Good 😃" : visKm > 4 ? "Average 😕" : "Poor 🌫️";
 
+    // Pressure
     const pressure = data.main.pressure;
     document.querySelector("[data-pressure]").innerText = pressure;
     document.querySelector("[data-pressureStatus]").innerText = pressure > 1020 ? "High 📈" : pressure < 1000 ? "Low 📉" : "Normal 👍";
 }
 
-// NEW: Function to check which tab is currently active and render the correct data
+// Function to check which tab is currently active and render the correct data
 function checkActiveTabAndRender() {
     if (!globalForecastData) return;
     const activeTab = document.querySelector(".tab.active").innerText.trim();
@@ -124,12 +133,10 @@ function checkActiveTabAndRender() {
     }
 }
 
-// NEW: Function specifically for the "Today" tab (Next 24 hours, every 3 hours)
+// Render "Today" Tab (Next 24 hours, every 3 hours)
 function renderTodayForecast(data) {
     forecastContainer.innerHTML = "";
-    
-    // Grab the first 8 items (8 items * 3 hours = 24 hours)
-    const todayData = data.list.slice(0, 8);
+    const todayData = data.list.slice(0, 8); // Next 24 hrs
 
     todayData.forEach(item => {
         const time = new Date(item.dt * 1000).toLocaleTimeString('en-US', { hour: 'numeric', hour12: true });
@@ -141,14 +148,14 @@ function renderTodayForecast(data) {
             <p class="f-day">${time}</p>
             <img src="https://openweathermap.org/img/wn/${item.weather[0].icon}@2x.png" class="f-icon">
             <div class="f-temps">
-                <span class="f-max" style="color: #110E3C;">${temp}°</span>
+                <span class="f-max">${temp}°</span>
             </div>
         `;
         forecastContainer.appendChild(card);
     });
 }
 
-// RENAMED: Function specifically for the "Week" tab (Daily forecast)
+// Render "Week" Tab (Daily forecast)
 function renderWeekForecast(data) {
     forecastContainer.innerHTML = "";
     const dailyData = [];
@@ -201,15 +208,12 @@ grantAccessBtn.addEventListener("click", () => {
     }
 });
 
-// NEW: Event Listeners for Tabs ("Today" and "Week")
+// Event Listeners for Tabs ("Today" and "Week")
 const tabs = document.querySelectorAll(".tab");
 tabs.forEach(tab => {
     tab.addEventListener("click", (e) => {
-        // Remove active class from all tabs
         tabs.forEach(t => t.classList.remove("active"));
-        // Add active class to clicked tab
         e.target.classList.add("active");
-        // Re-render the forecast based on the new active tab
         checkActiveTabAndRender();
     });
 });
@@ -231,32 +235,29 @@ unitBtns.forEach(btn => {
     });
 });
 
-
-
 // --- THEME TOGGLE (DARK/LIGHT MODE) ---
 const themeToggleBtn = document.querySelector(".profile-pic");
+const themeIcon = document.querySelector(".theme-icon"); 
 const body = document.body;
 
-// 1. Check if user already saved a theme preference in LocalStorage
+// Check if user already saved a theme preference in LocalStorage
 const savedTheme = localStorage.getItem("weather-theme");
 if (savedTheme === "dark") {
     body.classList.add("dark-mode");
-    themeToggleBtn.innerText = "🌙"; // Switch to moon icon for dark mode
+    themeIcon.innerText = "🌙"; 
+} else {
+    themeIcon.innerText = "☀️"; 
 }
 
-// 2. Listen for clicks on the profile pic button
+// Listen for clicks on the theme toggle button
 themeToggleBtn.addEventListener("click", () => {
-    // Toggle the dark-mode class on the body
     body.classList.toggle("dark-mode");
     
-    // Check if dark mode is now active
     if (body.classList.contains("dark-mode")) {
-        // Save preference and change icon
         localStorage.setItem("weather-theme", "dark");
-        themeToggleBtn.innerText = "🌙"; 
+        themeIcon.innerText = "🌙"; 
     } else {
-        // Save preference and revert icon
         localStorage.setItem("weather-theme", "light");
-        themeToggleBtn.innerText = "☀️"; // Or use "☀️" for light mode
+        themeIcon.innerText = "☀️"; 
     }
 });

@@ -4,10 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Modern Weather App</title>
+    <!-- Fonts & Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" />
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -15,12 +16,19 @@
         
         <!-- LEFT SIDEBAR: Current Weather -->
         <aside class="sidebar">
+            
+            <!-- Search Bar -->
             <form class="search-container" data-searchForm>
-    <button type="submit" class="search-btn" title="Search"><i class="fa-solid fa-magnifying-glass"></i></button>
-    <input type="text" placeholder="Search for places ..." data-searchInput>
-    <button type="button" class="location-btn" data-grantAccess title="Current Location"><i class="fa-solid fa-location-dot"></i></button>
-</form>
+                <button type="submit" class="search-btn" title="Search"><i class="fa-solid fa-magnifying-glass"></i></button>
+                <input type="text" placeholder="Search for places ..." data-searchInput>
+            </form>
 
+            <!-- Explicit Current Location Button (Better UX) -->
+            <button type="button" class="current-location-btn" data-grantAccess>
+                <i class="fa-solid fa-location-crosshairs"></i> Use Current Location
+            </button>
+
+            <!-- Current Weather Data -->
             <div class="current-weather">
                 <img src="" data-weatherIcon class="large-weather-icon" alt="Weather Icon">
                 <h1 class="current-temp"><span data-temp></span></h1>
@@ -48,14 +56,20 @@
                     <span class="tab">Today</span>
                     <span class="tab active">Week</span>
                 </div>
+                
                 <div class="controls">
                     <button class="unit-btn active" data-unit="metric">°C</button>
                     <button class="unit-btn" data-unit="imperial">°F</button>
-                  <div class="profile-pic" title="Toggle Dark/Light Mode">☀️</div>
+                    
+                    <!-- Theme Toggle Button -->
+                    <div class="profile-pic" title="Toggle Dark/Light Mode">
+                        <span class="theme-text">Switch Mode</span>
+                        <span class="theme-icon">☀️</span>
+                    </div>
                 </div>
             </header>
 
-            <!-- Loading Spinner (Hidden by default) -->
+            <!-- Loading Spinner -->
             <div class="loading-container" style="display: none;">
                 <div class="spinner"></div>
                 <p>Loading weather data...</p>
@@ -63,14 +77,14 @@
 
             <!-- Forecast Grid -->
             <div class="forecast-container" data-forecastContainer>
-                <!-- Forecast cards will be injected here by JS -->
+                <!-- Forecast cards injected by JS -->
             </div>
 
             <!-- Today's Highlights -->
             <h2 class="section-title">Today's Highlights</h2>
             <div class="highlights-grid">
                 
-                <!-- Card 1: Feels Like (Replaced UV Index) -->
+                <!-- Card 1: Feels Like -->
                 <div class="highlight-card">
                     <p class="card-title">Feels Like</p>
                     <div class="gauge-container">
@@ -92,15 +106,11 @@
                     <p class="card-title">Sunrise & Sunset</p>
                     <div class="sun-item">
                         <div class="sun-icon up">⬆</div>
-                        <div>
-                            <p class="sun-time" data-sunrise></p>
-                        </div>
+                        <div><p class="sun-time" data-sunrise></p></div>
                     </div>
                     <div class="sun-item mt-10">
                         <div class="sun-icon down">⬇</div>
-                        <div>
-                            <p class="sun-time" data-sunset></p>
-                        </div>
+                        <div><p class="sun-time" data-sunset></p></div>
                     </div>
                 </div>
 
@@ -123,7 +133,7 @@
                     <p class="status-text" data-visStatus>Average 😕</p>
                 </div>
 
-                <!-- Card 6: Pressure (Replaced Air Quality) -->
+                <!-- Card 6: Pressure -->
                 <div class="highlight-card">
                     <p class="card-title">Pressure</p>
                     <div class="humidity-content">
@@ -135,6 +145,7 @@
             </div>
         </main>
     </div>
+    
     <script src="script.js"></script>
 </body>
 </html>
