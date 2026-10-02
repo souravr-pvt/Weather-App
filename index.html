@@ -3,99 +3,138 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Weather App</title>
+    <title>Modern Weather App</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Merriweather+Sans:wght@300;400;500;600;700&display=swap"
-    rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="style.css">
-    <link rel="icon" type="img/x-icon" href="./assets/image.png">
-  
 </head>
 <body>
-  <div class="wrapper">
+    <div class="dashboard">
+        
+        <!-- LEFT SIDEBAR: Current Weather -->
+        <aside class="sidebar">
+            <form class="search-container" data-searchForm>
+    <button type="submit" class="search-btn" title="Search"><i class="fa-solid fa-magnifying-glass"></i></button>
+    <input type="text" placeholder="Search for places ..." data-searchInput>
+    <button type="button" class="location-btn" data-grantAccess title="Current Location"><i class="fa-solid fa-location-dot"></i></button>
+</form>
 
-    
+            <div class="current-weather">
+                <img src="" data-weatherIcon class="large-weather-icon" alt="Weather Icon">
+                <h1 class="current-temp"><span data-temp></span></h1>
+                <p class="current-day-time"><span data-day></span>, <span class="text-gray" data-time></span></p>
+                
+                <hr class="divider">
+                
+                <div class="weather-desc-container">
+                    <p class="desc-item">☁️ <span data-weatherDesc></span></p>
+                    <p class="desc-item">💧 Rain - <span data-rainChance>0</span>%</p>
+                </div>
 
-    <h1>Weather App</h1>
+                <div class="city-badge">
+                    <p data-cityName></p>
+                </div>
+            </div>
+        </aside>
 
-    <div class="tab-container">
-        <p class="tab" data-userWeather>Your Weather</p>
-        <p class="tab" data-searchWeather>Search Weather</p>
-     </div>
+        <!-- RIGHT CONTENT: Forecast & Highlights -->
+        <main class="main-content">
+            
+            <!-- Header (Tabs & Units) -->
+            <header class="main-header">
+                <div class="tabs">
+                    <span class="tab">Today</span>
+                    <span class="tab active">Week</span>
+                </div>
+                <div class="controls">
+                    <button class="unit-btn active" data-unit="metric">°C</button>
+                    <button class="unit-btn" data-unit="imperial">°F</button>
+                  <div class="profile-pic" title="Toggle Dark/Light Mode">☀️</div>
+                </div>
+            </header>
 
-     <div class="weather-container">
-
-        <!--if weather permision is not given or grant location-->
-        <div class=" sub-container grant-location-container">
-            <img src="./assets/location.png" width="80" height="80" loading="lazy">
-            <p>Grant location Aceess</p>
-            <button class="btn" data-grantAccess>Give Access</button>
-        </div>
-
-        <!--search form-->
-
-        <form class="form-container" data-searchForm>
-            <input placeholder="search for city.." data-searchInput>
-        <button class="btn" type="submit">
-            <img src="./assets/search.png" width="20" height="20" loading="lazy">
-        </button>
-        </form>
-
-        <!--loading icon-->
-        <div class=" sub-container loading-container">
-            <img src="./assets/loading.gif" width="150" height="150">
-            <p>Loading..</p>
-        </div>
-
-        <!--main weather information-->
-        <div class="sub-container user-info-container">
-            <!--city name and flag-->
-            <div class="name">
-                <p data-cityName></p>
-                <img data-countryIcon>
+            <!-- Loading Spinner (Hidden by default) -->
+            <div class="loading-container" style="display: none;">
+                <div class="spinner"></div>
+                <p>Loading weather data...</p>
             </div>
 
-            <!--weather description-->
-            <p data-weatherDesc></p>
-            <!--weather Icon-->
-            <img data-weatherIcon>
-            <!--temperature-->
-            <p data-temp></p>
-
-            <!--3cards parameter-->
-            <div class="parameter-container">
-                <!--card 1-->
-                <div class="parameter">
-                    <img src="./assets/wind.png" >
-                    <p>windspeed</p>
-                    <p data-windSpeed></p>
-                </div>
-
-                <!--card 2-->
-                <div class="parameter">
-                    <img src="./assets/humidity.png" >
-                    <p>humidity</p>
-                    <p data-humidity=""></p>
-                </div>
-
-                <!--card 3-->
-                <div class="parameter">
-                    <img src="./assets/cloud.png" >
-                    <p>cloud</p>
-                    <p data-cloud></p>
-                </div>
-
-
+            <!-- Forecast Grid -->
+            <div class="forecast-container" data-forecastContainer>
+                <!-- Forecast cards will be injected here by JS -->
             </div>
 
-        </div>
+            <!-- Today's Highlights -->
+            <h2 class="section-title">Today's Highlights</h2>
+            <div class="highlights-grid">
+                
+                <!-- Card 1: Feels Like (Replaced UV Index) -->
+                <div class="highlight-card">
+                    <p class="card-title">Feels Like</p>
+                    <div class="gauge-container">
+                        <h2 class="highlight-val"><span data-feelsLike></span>°</h2>
+                    </div>
+                </div>
 
-     </div>
-     
-    
-  </div>
+                <!-- Card 2: Wind Status -->
+                <div class="highlight-card">
+                    <p class="card-title">Wind Status</p>
+                    <h2 class="highlight-val"><span data-windSpeed></span> <span class="unit">km/h</span></h2>
+                    <div class="wind-dir">
+                        <span class="dir-icon">🧭</span> <span data-windDir></span>
+                    </div>
+                </div>
 
-  <script src="script.js"></script>
+                <!-- Card 3: Sunrise & Sunset -->
+                <div class="highlight-card">
+                    <p class="card-title">Sunrise & Sunset</p>
+                    <div class="sun-item">
+                        <div class="sun-icon up">⬆</div>
+                        <div>
+                            <p class="sun-time" data-sunrise></p>
+                        </div>
+                    </div>
+                    <div class="sun-item mt-10">
+                        <div class="sun-icon down">⬇</div>
+                        <div>
+                            <p class="sun-time" data-sunset></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 4: Humidity -->
+                <div class="highlight-card">
+                    <p class="card-title">Humidity</p>
+                    <div class="humidity-content">
+                        <h2 class="highlight-val"><span data-humidity></span><span class="unit">%</span></h2>
+                        <div class="progress-bar-vertical">
+                            <div class="progress-fill" data-humidityBar></div>
+                        </div>
+                    </div>
+                    <p class="status-text" data-humidityStatus>Normal 👍</p>
+                </div>
+
+                <!-- Card 5: Visibility -->
+                <div class="highlight-card">
+                    <p class="card-title">Visibility</p>
+                    <h2 class="highlight-val"><span data-visibility></span> <span class="unit">km</span></h2>
+                    <p class="status-text" data-visStatus>Average 😕</p>
+                </div>
+
+                <!-- Card 6: Pressure (Replaced Air Quality) -->
+                <div class="highlight-card">
+                    <p class="card-title">Pressure</p>
+                    <div class="humidity-content">
+                        <h2 class="highlight-val"><span data-pressure></span> <span class="unit">hPa</span></h2>
+                    </div>
+                    <p class="status-text" data-pressureStatus>Normal 👍</p>
+                </div>
+
+            </div>
+        </main>
+    </div>
+    <script src="script.js"></script>
 </body>
 </html>
